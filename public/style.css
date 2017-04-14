@@ -15,7 +15,7 @@ body,html{
 }
 .nav{
 	padding: 0 8px 0 8px;
-	background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background-color: #00C853;
 }
 .nav > a{
 	margin-top: 10px;
@@ -42,4 +42,14 @@ hr{
 }
 .fa + .fa{
 	margin-right: 3px;
+}
+.modal{
+	opacity: 0;
+	transition: 1s;
+}
+ .is-active{
+	opacity:1;
+}
+.mtop1{
+	margin-top: 3%;
 }

@@ -20790,155 +20790,363 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // Initialize Firebase
 var config = {
-    apiKey: "AIzaSyCbYwNLRiAx_IGTovWdqJLuXPXVjEqHgIk",
-    authDomain: "rocketnote-46fd7.firebaseapp.com",
-    databaseURL: "https://rocketnote-46fd7.firebaseio.com",
-    projectId: "rocketnote-46fd7",
-    storageBucket: "rocketnote-46fd7.appspot.com",
-    messagingSenderId: "381583485636"
+  apiKey: "AIzaSyCbYwNLRiAx_IGTovWdqJLuXPXVjEqHgIk",
+  authDomain: "rocketnote-46fd7.firebaseapp.com",
+  databaseURL: "https://rocketnote-46fd7.firebaseio.com",
+  projectId: "rocketnote-46fd7",
+  storageBucket: "rocketnote-46fd7.appspot.com",
+  messagingSenderId: "381583485636"
 };
 firebase.initializeApp(config);
 
 var App = function (_React$Component) {
-    _inherits(App, _React$Component);
+  _inherits(App, _React$Component);
 
-    function App() {
-        _classCallCheck(this, App);
+  function App() {
+    _classCallCheck(this, App);
 
-        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
-        _this.state = {
-            notes: []
-        };
-        _this.showNewNote = _this.showNewNote.bind(_this);
-        _this.addNote = _this.addNote.bind(_this);
-        return _this;
+    _this.state = {
+      notes: [],
+      loggedIn: false
+    };
+    _this.showNewNote = _this.showNewNote.bind(_this);
+    _this.addNote = _this.addNote.bind(_this);
+    _this.showSignUp = _this.showSignUp.bind(_this);
+    _this.createUser = _this.createUser.bind(_this);
+    _this.loginUser = _this.loginUser.bind(_this);
+    _this.showLogin = _this.showLogin.bind(_this);
+    _this.signOut = _this.signOut.bind(_this);
+    return _this;
+  }
+
+  _createClass(App, [{
+    key: 'showNotes',
+    value: function showNotes() {
+      var _this2 = this;
+
+      if (this.state.loggedIn) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'notes columns is-multiline' },
+          this.state.notes.map(function (note, i) {
+            return _react2.default.createElement(_notecard2.default, { note: note, key: 'note-' + i, removeNote: _this2.removeNote });
+          }).reverse()
+        );
+      } else {
+        return _react2.default.createElement(
+          'h2',
+          { className: 'title is-2 mtop1' },
+          'Sign In to add notes.'
+        );
+      }
     }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount(e) {
+      var _this3 = this;
 
-    _createClass(App, [{
-        key: 'componentDidMount',
-        value: function componentDidMount(e) {
-            var _this2 = this;
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+          firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notes').on('value', function (res) {
+            var dataArray = [];
+            var userData = res.val();
+            for (var key in userData) {
+              userData[key].key = key;
+              dataArray.push(userData[key]);
+            }
+            _this3.setState({ notes: dataArray, loggedIn: true });
+          });
+        } else {
+          _this3.setState({ loggedIn: false });
+        }
+      });
+    }
+  }, {
+    key: 'showNewNote',
+    value: function showNewNote(e) {
+      e.preventDefault();
+      this.newNoteMenu.classList.toggle('is-active');
+    }
+  }, {
+    key: 'showSignUp',
+    value: function showSignUp(e) {
+      e.preventDefault();
+      this.newSignUp.classList.toggle('is-active');
+      console.log('show sign up');
+    }
+  }, {
+    key: 'showLogin',
+    value: function showLogin(e) {
+      e.preventDefault();
+      this.newLogin.classList.toggle('is-active');
+      console.log('show sign in');
+    }
+  }, {
+    key: 'addNote',
+    value: function addNote(e) {
+      e.preventDefault();
+      var note = {
+        title: this.noteTitle.value,
+        text: this.noteText.value
+      };
+      var dbRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notes');
+      dbRef.push(note);
+      this.noteTitle.value = '';
+      this.noteText.value = '';
+      this.showNewNote(e);
+    }
+  }, {
+    key: 'removeNote',
+    value: function removeNote(noteId) {
+      console.log(noteId);
+      var dbRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notes/' + noteId);
+      dbRef.remove();
+    }
+  }, {
+    key: 'createUser',
+    value: function createUser(e) {
+      e.preventDefault();
+      var email = this.emailInput.value;
+      var password = this.newpassword.value;
+      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        alert(errorCode, errorMessage);
+      });
+      this.showSignUp(e);
+      this.emailInput.value = '';
+      this.newpassword.value = '';
+    }
+  }, {
+    key: 'loginUser',
+    value: function loginUser(e) {
+      var _this4 = this;
 
-            firebase.database().ref().on('value', function (res) {
-                var dataArray = [];
-                var userData = res.val();
-                for (var key in userData) {
-                    userData[key].key = key;
-                    dataArray.push(userData[key]);
-                }
-                _this2.setState({
-                    notes: dataArray
-                });
-            });
-        }
-    }, {
-        key: 'showNewNote',
-        value: function showNewNote(e) {
-            e.preventDefault();
-            this.newNoteMenu.classList.toggle('is-active');
-        }
-    }, {
-        key: 'addNote',
-        value: function addNote(e) {
-            e.preventDefault();
-            var note = {
-                title: this.noteTitle.value,
-                text: this.noteText.value
-            };
-            var dbRef = firebase.database().ref();
-            dbRef.push(note);
-            this.noteTitle.value = '';
-            this.noteText.value = '';
-            this.showNewNote(e);
-        }
-    }, {
-        key: 'removeNote',
-        value: function removeNote(noteId) {
-            console.log(noteId);
-            var dbRef = firebase.database().ref(noteId);
-            dbRef.remove();
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var _this3 = this;
+      e.preventDefault();
+      var email = this.emaillogin.value;
+      var password = this.passlogin.value;
 
-            return _react2.default.createElement(
-                'div',
+      firebase.auth().signInWithEmailAndPassword(email, password).then(function (res) {
+        return _this4.showLogin(e);
+      }).catch(function (err) {
+        return alert(err.message + err.code);
+      });
+    }
+  }, {
+    key: 'signOut',
+    value: function signOut(e) {
+      e.preventDefault();
+      firebase.auth().signOut();
+      this.state.loggedIn = false;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this5 = this;
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'div',
+          { className: 'nav' },
+          _react2.default.createElement(
+            'h2',
+            { className: 'nav-left title is-2' },
+            'RocketNote v0.1'
+          ),
+          function () {
+            if (_this5.state.loggedIn) {
+
+              return _react2.default.createElement(
+                'span',
                 null,
                 _react2.default.createElement(
-                    'div',
-                    { className: 'nav' },
-                    _react2.default.createElement(
-                        'h3',
-                        { className: 'nav-left title is-3' },
-                        'RocketNote v0.1'
-                    ),
-                    _react2.default.createElement(
-                        'a',
-                        { href: '', onClick: this.showNewNote, className: 'button is-primary is-pulled-right' },
-                        'New Note'
-                    )
+                  'a',
+                  { href: '', className: 'button is-danger', onClick: _this5.signOut },
+                  'Sign Out'
                 ),
                 _react2.default.createElement(
-                    'div',
-                    { className: 'container' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'newNote modal', ref: function ref(_ref3) {
-                                return _this3.newNoteMenu = _ref3;
-                            } },
-                        _react2.default.createElement('div', { className: 'modal-background' }),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'modal-content' },
-                            _react2.default.createElement(
-                                'form',
-                                { onSubmit: this.addNote },
-                                _react2.default.createElement(
-                                    'label',
-                                    { htmlFor: 'title', className: 'label' },
-                                    'Name:'
-                                ),
-                                _react2.default.createElement('input', { type: 'text', className: 'input', ref: function ref(_ref) {
-                                        return _this3.noteTitle = _ref;
-                                    } }),
-                                _react2.default.createElement(
-                                    'label',
-                                    { htmlFor: 'notetext', className: 'label' },
-                                    'Note:'
-                                ),
-                                _react2.default.createElement('textarea', { name: 'notetext', id: 'nttext', cols: '30', rows: '10', className: 'textarea', ref: function ref(_ref2) {
-                                        return _this3.noteText = _ref2;
-                                    } }),
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'is-pulled-right' },
-                                    _react2.default.createElement(
-                                        'a',
-                                        { className: 'button has-text-right', onClick: this.showNewNote },
-                                        'Cancel'
-                                    ),
-                                    _react2.default.createElement('input', { type: 'submit', value: 'Add Note', className: 'button is-success' })
-                                )
-                            )
-                        ),
-                        _react2.default.createElement('button', { className: 'modal-close', onClick: this.showNewNote })
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'notes columns is-multiline' },
-                        this.state.notes.map(function (note, i) {
-                            return _react2.default.createElement(_notecard2.default, { note: note, key: 'note-' + i, removeNote: _this3.removeNote });
-                        }).reverse()
-                    )
+                  'a',
+                  {
+                    href: '',
+                    onClick: _this5.showNewNote,
+                    className: 'button' },
+                  'New Note'
                 )
-            );
-        }
-    }]);
+              );
+            } else {
+              return _react2.default.createElement(
+                'span',
+                null,
+                _react2.default.createElement(
+                  'a',
+                  { href: '', className: 'button is-dark', onClick: _this5.showLogin },
+                  'Log In'
+                ),
+                _react2.default.createElement(
+                  'a',
+                  { href: '', className: 'button is-dark', onClick: _this5.showSignUp },
+                  'Sign Up'
+                )
+              );
+            }
+          }()
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'container' },
+          _react2.default.createElement(
+            'div',
+            { className: 'signUp modal', ref: function ref(_ref3) {
+                return _this5.newSignUp = _ref3;
+              } },
+            _react2.default.createElement('div', { className: 'modal-background' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'modal-content' },
+              _react2.default.createElement(
+                'form',
+                { onSubmit: this.createUser },
+                _react2.default.createElement(
+                  'label',
+                  null,
+                  'Email'
+                ),
+                _react2.default.createElement('input', {
+                  className: 'input',
+                  type: 'email',
+                  ref: function ref(_ref) {
+                    return _this5.emailInput = _ref;
+                  },
+                  placeholder: 'email' }),
+                _react2.default.createElement(
+                  'label',
+                  null,
+                  'Password'
+                ),
+                _react2.default.createElement('input', {
+                  type: 'password',
+                  className: 'input',
+                  ref: function ref(_ref2) {
+                    return _this5.newpassword = _ref2;
+                  },
+                  placeholder: 'password' }),
+                _react2.default.createElement('input', {
+                  type: 'submit',
+                  className: 'button is-success is-pulled-right',
+                  value: 'Sign Up' })
+              )
+            ),
+            _react2.default.createElement('button', { className: 'modal-close', onClick: this.showSignUp })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'login modal', ref: function ref(_ref6) {
+                return _this5.newLogin = _ref6;
+              } },
+            _react2.default.createElement('div', { className: 'modal-background' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'modal-content' },
+              _react2.default.createElement(
+                'form',
+                { onSubmit: this.loginUser },
+                _react2.default.createElement(
+                  'h2',
+                  { className: 'title is-3' },
+                  'Login'
+                ),
+                _react2.default.createElement('hr', null),
+                _react2.default.createElement(
+                  'label',
+                  null,
+                  'Email'
+                ),
+                _react2.default.createElement('input', {
+                  className: 'input',
+                  type: 'email',
+                  ref: function ref(_ref4) {
+                    return _this5.emaillogin = _ref4;
+                  },
+                  placeholder: 'email' }),
+                _react2.default.createElement(
+                  'label',
+                  null,
+                  'Password'
+                ),
+                _react2.default.createElement('input', {
+                  type: 'password',
+                  className: 'input',
+                  ref: function ref(_ref5) {
+                    return _this5.passlogin = _ref5;
+                  },
+                  placeholder: 'password' }),
+                _react2.default.createElement('input', {
+                  type: 'submit',
+                  className: 'button is-success is-pulled-right',
+                  value: 'Sign In' })
+              )
+            ),
+            _react2.default.createElement('button', { className: 'modal-close', onClick: this.showLogin })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'newNote modal', ref: function ref(_ref9) {
+                return _this5.newNoteMenu = _ref9;
+              } },
+            _react2.default.createElement('div', { className: 'modal-background' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'modal-content' },
+              _react2.default.createElement(
+                'form',
+                { onSubmit: this.addNote },
+                _react2.default.createElement(
+                  'label',
+                  { htmlFor: 'title', className: 'label' },
+                  'Name:'
+                ),
+                _react2.default.createElement('input', { type: 'text', className: 'input', ref: function ref(_ref7) {
+                    return _this5.noteTitle = _ref7;
+                  } }),
+                _react2.default.createElement(
+                  'label',
+                  { htmlFor: 'notetext', className: 'label' },
+                  'Note:'
+                ),
+                _react2.default.createElement('textarea', {
+                  name: 'notetext',
+                  id: 'nttext',
+                  cols: '30',
+                  rows: '10',
+                  className: 'textarea',
+                  ref: function ref(_ref8) {
+                    return _this5.noteText = _ref8;
+                  } }),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'is-pulled-right' },
+                  _react2.default.createElement(
+                    'a',
+                    { className: 'button has-text-right', onClick: this.showNewNote },
+                    'Cancel'
+                  ),
+                  _react2.default.createElement('input', { type: 'submit', value: 'Add Note', className: 'button is-success' })
+                )
+              )
+            ),
+            _react2.default.createElement('button', { className: 'modal-close', onClick: this.showNewNote })
+          ),
+          this.showNotes()
+        )
+      );
+    }
+  }]);
 
-    return App;
+  return App;
 }(_react2.default.Component);
 
 _reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('app'));
@@ -20980,13 +21188,6 @@ var NoteCard = function (_React$Component) {
     }
 
     _createClass(NoteCard, [{
-        key: "componentDidMount",
-        value: function componentDidMount() {
-            this.setState({
-                note: this.props.note
-            });
-        }
-    }, {
         key: "render",
         value: function render() {
             var _this2 = this;
@@ -21000,10 +21201,10 @@ var NoteCard = function (_React$Component) {
                     _react2.default.createElement(
                         "span",
                         { className: "title is-4" },
-                        this.state.note.title
+                        this.props.note.title
                     ),
                     _react2.default.createElement("i", { className: "fa fa-times is-pulled-right", onClick: function onClick() {
-                            return _this2.props.removeNote(_this2.state.note.key);
+                            return _this2.props.removeNote(_this2.props.note.key);
                         } }),
                     _react2.default.createElement("i", { className: "fa fa-edit is-pulled-right", onClick: function onClick() {
                             _this2.setState({ editing: true });
@@ -21013,7 +21214,7 @@ var NoteCard = function (_React$Component) {
                 _react2.default.createElement(
                     "p",
                     null,
-                    this.state.note.text
+                    this.props.note.text
                 )
             );
         }
