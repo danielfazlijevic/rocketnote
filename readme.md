@@ -1,5 +1,9 @@
 # RocketSync
-## Synchronized note taking web app
+### Synchronized note taking web app
+
+## Demo
+[https://danielfazlijevic.github.io/rocketnote/](https://danielfazlijevic.github.io/rocketnote/)
+
 
 ### Installation
 Clone the repo
