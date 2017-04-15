@@ -20887,14 +20887,20 @@ var App = function (_React$Component) {
     key: 'addNote',
     value: function addNote(e) {
       e.preventDefault();
+      var date = new Date();
+      var day = date.getDate();
+      var month = date.getMonth() + 1;
       var note = {
         title: this.noteTitle.value,
-        text: this.noteText.value
+        text: this.noteText.value,
+        date: day + '/' + month
       };
       var dbRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/notes');
+
       dbRef.push(note);
       this.noteTitle.value = '';
       this.noteText.value = '';
+
       this.showNewNote(e);
     }
   }, {
@@ -21102,6 +21108,11 @@ var App = function (_React$Component) {
               'div',
               { className: 'modal-content' },
               _react2.default.createElement(
+                'h2',
+                { className: 'title is-3' },
+                'Add new note'
+              ),
+              _react2.default.createElement(
                 'form',
                 { onSubmit: this.addNote },
                 _react2.default.createElement(
@@ -21155,7 +21166,7 @@ _reactDom2.default.render(_react2.default.createElement(App, null), document.get
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21173,54 +21184,63 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var NoteCard = function (_React$Component) {
-    _inherits(NoteCard, _React$Component);
+  _inherits(NoteCard, _React$Component);
 
-    function NoteCard() {
-        _classCallCheck(this, NoteCard);
+  function NoteCard() {
+    _classCallCheck(this, NoteCard);
 
-        var _this = _possibleConstructorReturn(this, (NoteCard.__proto__ || Object.getPrototypeOf(NoteCard)).call(this));
+    var _this = _possibleConstructorReturn(this, (NoteCard.__proto__ || Object.getPrototypeOf(NoteCard)).call(this));
 
-        _this.state = {
-            editing: false,
-            note: {}
-        };
-        return _this;
+    _this.state = {
+      editing: false,
+      note: {}
+    };
+    return _this;
+  }
+
+  _createClass(NoteCard, [{
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      return _react2.default.createElement(
+        "div",
+        { className: "column is-3 note card-bg animated fadeInUp" },
+        _react2.default.createElement(
+          "div",
+          { className: "is-clearfix" },
+          _react2.default.createElement(
+            "span",
+            { className: "title is-4" },
+            this.props.note.title
+          ),
+          _react2.default.createElement("i", {
+            className: "fa fa-times is-pulled-right",
+            onClick: function onClick() {
+              return _this2.props.removeNote(_this2.props.note.key);
+            } }),
+          _react2.default.createElement("i", {
+            className: "fa fa-edit is-pulled-right",
+            onClick: function onClick() {
+              _this2.setState({ editing: true });
+            } }),
+          _react2.default.createElement("hr", null)
+        ),
+        _react2.default.createElement(
+          "p",
+          null,
+          this.props.note.text
+        ),
+        _react2.default.createElement(
+          "p",
+          { className: "date" },
+          this.props.note.date
+        )
+      );
     }
+  }]);
 
-    _createClass(NoteCard, [{
-        key: "render",
-        value: function render() {
-            var _this2 = this;
-
-            return _react2.default.createElement(
-                "div",
-                { className: "column is-3 note card-bg" },
-                _react2.default.createElement(
-                    "div",
-                    { className: "is-clearfix" },
-                    _react2.default.createElement(
-                        "span",
-                        { className: "title is-4" },
-                        this.props.note.title
-                    ),
-                    _react2.default.createElement("i", { className: "fa fa-times is-pulled-right", onClick: function onClick() {
-                            return _this2.props.removeNote(_this2.props.note.key);
-                        } }),
-                    _react2.default.createElement("i", { className: "fa fa-edit is-pulled-right", onClick: function onClick() {
-                            _this2.setState({ editing: true });
-                        } }),
-                    _react2.default.createElement("hr", null)
-                ),
-                _react2.default.createElement(
-                    "p",
-                    null,
-                    this.props.note.text
-                )
-            );
-        }
-    }]);
-
-    return NoteCard;
+  return NoteCard;
 }(_react2.default.Component);
 
 exports.default = NoteCard;

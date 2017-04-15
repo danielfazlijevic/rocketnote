@@ -53,3 +53,16 @@ hr{
 .mtop1{
 	margin-top: 3%;
 }
+
+.fa-times:hover{
+	cursor: pointer;
+	color: red;
+	transition:0.5s;
+}
+.nav-left{
+	color: #fff;
+}
+.date{
+	font-style: italic;
+	font-size: 86%;
+}
