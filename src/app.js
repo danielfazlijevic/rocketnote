@@ -109,16 +109,22 @@ class App extends React.Component {
   }
   addNote(e) {
     e.preventDefault();
+    const date = new Date();
+      const day = date.getDate();
+      const month = date.getMonth()+1;
     const note = {
       title: this.noteTitle.value,
-      text: this.noteText.value
+      text: this.noteText.value,
+      date: day + '/' + month
     };
     const dbRef = firebase
       .database()
       .ref(`users/${firebase.auth().currentUser.uid}/notes`);
+      
     dbRef.push(note);
     this.noteTitle.value = '';
     this.noteText.value = '';
+    
     this.showNewNote(e);
   }
   removeNote(noteId) {
@@ -249,6 +255,7 @@ class App extends React.Component {
           <div className="newNote modal" ref={ref => this.newNoteMenu = ref}>
             <div className="modal-background"></div>
             <div className="modal-content">
+            <h2 className='title is-3'>Add new note</h2>
               <form onSubmit={this.addNote}>
 
                 <label htmlFor="title" className='label'>Name:</label>
